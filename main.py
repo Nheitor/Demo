@@ -16,7 +16,7 @@ import math, sys
 
 
 class ThreadApp(QThread):
-    any_signal = Signal()
+    any_signal = Signal(list)
 
     def __init__(self, index = 0):
         QThread.__init__(self)
@@ -25,7 +25,7 @@ class ThreadApp(QThread):
 
     def run(self):
         print("start thread", self.index)
-        self.any_signal.emit()
+        self.any_signal.emit([0, 0, -1, -1])
     def stop(self):
         print("stop thread", self.index)
         self.terminate()
@@ -101,7 +101,7 @@ class MainWindow(QMainWindow):
         self.thread["_mt"] = ThreadApp(1)
         self.thread["_mt"].start()
 
-        self.thread["_mt"].any_signal.connect(lambda : self.bfs(0, 0, -1 , -1))
+        self.thread["_mt"].any_signal.connect(self.bfs)
 
         self.ui.start_stop_btn.clicked.disconnect()
         self.ui.start_stop_btn.clicked.connect(self.stop_event)
@@ -126,8 +126,8 @@ class MainWindow(QMainWindow):
         print(self.a)
 
     # BFS Tìm kiếm thể lực tối thiểu từ [0][0] đến [rows][columns] #
-    def bfs(self, x, y, ox, oy):
-        self.a = 200
+    def bfs(self, l):
+        x, y, ox, oy = l[0], l[1], l[2], l[3]
         self.cellM[x][y].selected("#2c53ff")
         sleep(0.6)
         
@@ -156,7 +156,7 @@ class MainWindow(QMainWindow):
                         
                         self.cellM[x][y].unselected()
                         
-                        self.bfs(x1, y1, x, y)
+                        self.bfs([x1, y1, x, y])
                         
                         self.cellM[x][y].selected("#2c53ff")
                         sleep(0.6)
